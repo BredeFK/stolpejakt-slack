@@ -1,34 +1,65 @@
+import json
+import os
 import urllib.parse
 
 import requests
+from Member import Member
+from dotenv import load_dotenv
 
-headers = {
-    'Authorization': 'Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOiI2NjIxMTY0NmI5MTk4M2ViNTUxNDFiNWIiLCJVc2VyRGlzcGxheU5hbWUiOiJCcmVkZSBGcml0am9mIEtsYXVzZW4iLCJqdGkiOiI2MzE3NjY1MS0xMzQ1LTQzNjctYTdjYi0wM2ZlN2U3NjdiNjgiLCJyb2xlIjoidXNlciIsIm5iZiI6MTcxNDA2NDkyMywiZXhwIjoxNzE0MDkzNzIzLCJpYXQiOjE3MTQwNjQ5MjMsImlzcyI6InN0b2xwZWpha3RlbiIsImF1ZCI6InN0b2xwZWpha3RlbiJ9.E_mRUlIo6aqjPdUZNQ_FUI4pQEKXR4u4z9YCRPALfzO1IA-NSXLLRdfVR1JUtV9z3VfS_TFE4gX_7SzIFh8UlA'
-}
+load_dotenv()
+TOKEN = os.environ.get('TOKEN')
+WEBHOOK_URL = os.environ.get('WEBHOOK_URL')
 
-names = [
-    'Brede Fritjof Klausen',
-    'frodo',
-    'Malene Helsem',
-    'Robin Svanor',
-    'André',
-    'Espen Øvestad',
-    'Olav'
-]
+with open('members.txt', 'r', encoding='utf-8') as file:
+    lines = file.readlines()
 
-name = 'Brede Fritjof Klausen'
-urlencoded_name = urllib.parse.quote_plus(name)
-req = requests.get(url=f'https://apiv10.stolpejakten.no/toplists?type=-1&kommune=0&page=0&search={urlencoded_name}',
-                   headers=headers)
+member_names = [line.strip() for line in lines]
+print(member_names)
+members = []
 
-print('\nStolpejakten API V10 GET Request:', req.url)
-if req.status_code == 200:
-    body = req.json()
-    if body['count'] == 1:
-        user = body['results'][0]
-        user_name = user['user_name']
-        score = user['score']
-        rank = user['rank']
-        print(f'{rank} | {user_name}: {score}')
+for name in member_names:
+    urlencoded_name = urllib.parse.quote_plus(name)
+    req = requests.get(url=f'https://apiv10.stolpejakten.no/toplists?type=-1&kommune=0&page=0&search={urlencoded_name}',
+                       headers={'Authorization': f'Bearer {TOKEN}'})
+
+    if req.status_code == 200:
+        body = req.json()
+        if body['count'] == 1:
+            user = body['results'][0]
+            member = Member(user['rank'], user['user_name'], int(user['score']))
+            members.append(member)
+            # print(f'{member.rank} | {member.user_name}: {member.score}')
+        else:
+            members.append(Member('NOT FOUND', name, -1))
+            print(f'Found more than one user with name {name}')
+    else:
+        print(f'Something went wrong: {req.status_code}: {req.text}')
+
+sorted_members = sorted(members, key=lambda m: m.score, reverse=True)
+blocks = {"blocks": [
+    {"type": "header", "text": {"type": "plain_text", "text": "Resultater for WoI i Stolpejakten :stolpejakten:"}}]}
+
+for sorted_member in sorted_members:
+    section = {
+        "type": "section",
+        "fields": [
+            {
+                "type": "mrkdwn",
+                "text": f'*{sorted_member.rank}* | {sorted_member.user_name}'
+            },
+            {
+                "type": "mrkdwn",
+                "text": f'*{sorted_member.score}*'
+            }
+        ]
+    }
+    blocks['blocks'].append(section)
+
+print(blocks)
+
+slack_request = requests.post(url=WEBHOOK_URL, headers={'Content-type': 'application/json'}, data=json.dumps(blocks))
+
+if slack_request.status_code == 200:
+    print('Successfully sent slack message')
 else:
-    print(f'Something went wrong: {req.status_code}: {req.text}')
+    print(f'Error[{slack_request.status_code}] sending slack message: {slack_request.text}')
