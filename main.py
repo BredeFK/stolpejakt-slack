@@ -55,6 +55,21 @@ for sorted_member in sorted_members:
     }
     blocks['blocks'].append(section)
 
+divider = {
+    "type": "divider"
+}
+info = {
+    "type": "section",
+    "text": {
+        "type": "plain_text",
+        "text": "Om det står NOT FOUND foran navnet dit så betyr det at \ndet dukket opp mer enn én person da jeg "
+                "søkte opp navnet ditt.\n Om du bytter til et mer unikt navn, så dukker du også opp :).",
+        "emoji": True
+    }
+}
+blocks['blocks'].append(divider)
+blocks['blocks'].append(info)
+
 print(blocks)
 
 slack_request = requests.post(url=WEBHOOK_URL, headers={'Content-type': 'application/json'}, data=json.dumps(blocks))
