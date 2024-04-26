@@ -1,31 +1,25 @@
-import os
 import urllib.parse
 
 import requests
-from dotenv import load_dotenv
 
 from Member import Member
-
-load_dotenv()
-TOKEN = os.environ.get('TOKEN')
-GROUP_CODE = os.environ.get('GROUP_CODE')
 
 BASE_URL = 'https://apiv10.stolpejakten.no'
 
 
-def get_group_id():
-    req_me = requests.get(url=f'{BASE_URL}/affiliations/me', headers={'Authorization': f'Bearer {TOKEN}'})
+def get_group_id(token, group_code):
+    req_me = requests.get(url=f'{BASE_URL}/affiliations/me', headers={'Authorization': f'Bearer {token}'})
     if req_me.status_code == 200:
         user_groups = req_me.json()
         if len(user_groups['results']) != 0:
             group_id = None
             for group in user_groups['results']:
-                if group['code'] == GROUP_CODE:
+                if group['code'] == group_code:
                     group_id = group['id']
             if group_id is None:
-                print(f'Error: Group with code {GROUP_CODE} not found')
+                print(f'Error: Group with code {group_code} not found')
             else:
-                print(f'Group with code {GROUP_CODE} found')
+                print(f'Group with code {group_code} found')
                 return group_id
         else:
             print(f'Error: user has no groups')
@@ -34,13 +28,13 @@ def get_group_id():
         return None
 
 
-def get_group_member_names():
-    group_id = get_group_id()
+def get_group_member_names(token, group_code):
+    group_id = get_group_id(token, group_code)
     if group_id is None:
         exit("Error: GroupId not found")
 
     req_group = requests.get(url=f'{BASE_URL}/affiliations/members/{group_id}',
-                             headers={'Authorization': f'Bearer {TOKEN}'})
+                             headers={'Authorization': f'Bearer {token}'})
     if req_group.status_code == 200:
         group_members = req_group.json()
         if len(group_members['results']) != 0:
@@ -57,8 +51,8 @@ def get_group_member_names():
         return None
 
 
-def get_group_member_scoreboard():
-    member_names = get_group_member_names()
+def get_group_member_scoreboard(token, group_code):
+    member_names = get_group_member_names(token, group_code)
     if member_names is None:
         exit("Error: Group members not found")
 
@@ -67,7 +61,7 @@ def get_group_member_scoreboard():
         urlencoded_name = urllib.parse.quote_plus(name)
         req_user = requests.get(
             url=f'{BASE_URL}/toplists?type=-1&kommune=0&page=0&search={urlencoded_name}',
-            headers={'Authorization': f'Bearer {TOKEN}'})
+            headers={'Authorization': f'Bearer {token}'})
 
         if req_user.status_code == 200:
             body = req_user.json()
