@@ -1,6 +1,6 @@
 # Stolpejakt-slack
 
-Integration between Stolpejakt and Slack
+Integration between Stolpejakten and Slack
 
 ## Environment file
 
