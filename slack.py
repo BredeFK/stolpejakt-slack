@@ -6,8 +6,10 @@ import requests
 def format_message(sorted_members):
     blocks = {"blocks": [
         {"type": "header", "text": {"type": "plain_text", "text": "Resultater for WoI i Stolpejakten :stolpejakten:"}}]}
-
+    has_user_not_found = False
     for sorted_member in sorted_members:
+        if sorted_member.rank == 'NOT FOUND':
+            has_user_not_found = True
         section = {
             "type": "section",
             "fields": [
@@ -23,20 +25,21 @@ def format_message(sorted_members):
         }
         blocks['blocks'].append(section)
 
-    divider = {
-        "type": "divider"
-    }
-    info = {
-        "type": "section",
-        "text": {
-            "type": "plain_text",
-            "text": "Om det står NOT FOUND foran navnet dit så betyr det at \ndet dukket opp mer enn én person da jeg "
-                    "søkte opp navnet ditt.\n Om du bytter til et mer unikt navn, så dukker du også opp :).",
-            "emoji": True
+    if has_user_not_found:
+        divider = {
+            "type": "divider"
         }
-    }
-    blocks['blocks'].append(divider)
-    blocks['blocks'].append(info)
+        info = {
+            "type": "section",
+            "text": {
+                "type": "plain_text",
+                "text": "Om det står NOT FOUND foran navnet ditt, betyr det at \ndet dukket opp mer enn én person da "
+                        "jeg søkte opp navnet ditt.\n Om du bytter til et mer unikt navn, så dukker du også opp :).",
+                "emoji": True
+            }
+        }
+        blocks['blocks'].append(divider)
+        blocks['blocks'].append(info)
     return blocks
 
 
