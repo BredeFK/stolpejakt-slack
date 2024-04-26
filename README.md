@@ -8,17 +8,6 @@ Necessary environment variables for your `.env` file
 
 ```dotenv
 TOKEN="<Bearer token from Stolpejaktens website>"
+GROUP_CODE="<group code from Stolpejakten>"
 WEBHOOK_URL="<Webhook url to a slack bot>"
 ```
-
-### members.txt
-
-This is the file where you have the exact names of your members
-
-````
-Ola Nordmann
-Kari Nordmann
-Donald Duck
-Mikke Mus
-Martin Ødegård
-````
