@@ -1,3 +1,4 @@
+import json
 import urllib.parse
 
 import requests
@@ -5,6 +6,21 @@ import requests
 from Member import Member
 
 BASE_URL = 'https://apiv10.stolpejakten.no'
+
+
+def authorize_user(username, password, client_id):
+    payload = {'username': username, 'password': password, 'version': 2}
+    headers = {'Content-type': 'application/json',
+               'Content-Length': str(len(json.dumps(payload))),
+               'Accept': 'application/json',
+               'X-Client-id': client_id}
+    req_auth = requests.post(url=f'{BASE_URL}/auth', headers=headers, json=payload)
+    if req_auth.status_code == 200:
+        response = req_auth.json()
+        return response['token']
+    else:
+        print(f'Auth failed {req_auth.status_code}: {req_auth.text}')
+        return None
 
 
 def get_group_id(token, group_code):
@@ -51,7 +67,10 @@ def get_group_member_names(token, group_code):
         return None
 
 
-def get_group_member_scoreboard(token, group_code):
+def get_group_member_scoreboard(username, password, client_id, group_code):
+    token = authorize_user(username, password, client_id)
+    if token is None:
+        exit(f'Error: Auth failed for {username}')
     member_names = get_group_member_names(token, group_code)
     if member_names is None:
         exit("Error: Group members not found")
