@@ -8,6 +8,11 @@ def format_message(sorted_members):
         {"type": "header", "text": {"type": "plain_text", "text": "Resultater for WoI i Stolpejakten :stolpejakten:"}}]}
     has_user_not_found = False
     for sorted_member in sorted_members:
+        rank = sorted_member.rank
+        if rank == 'NOT FOUND':
+            has_user_not_found = True
+        else:
+            rank = f'{int(sorted_member.rank):_}'.replace('_', ' ')
         if sorted_member.rank == 'NOT FOUND':
             has_user_not_found = True
         section = {
@@ -15,7 +20,7 @@ def format_message(sorted_members):
             "fields": [
                 {
                     "type": "mrkdwn",
-                    "text": f'*{sorted_member.rank}* | {sorted_member.user_name}'
+                    "text": f'*{rank}* | {sorted_member.user_name}'
                 },
                 {
                     "type": "mrkdwn",
