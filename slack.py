@@ -3,16 +3,36 @@ import json
 import requests
 
 
+def get_placement_emoji(rank):
+    # number emojis from https://www.flaticon.com/packs/numbers-0-to-100-108
+    #  medal emojis from https://www.flaticon.com/packs/winning-8
+    if rank > 30:
+        return rank
+    match rank:
+        case 1:
+            return ':first_place_medal_1:'
+        case 2:
+            return ':second_place_medal_2:'
+        case 3:
+            return ':third_place_medal_3:'
+        case _:
+            return f':number-{rank}:'
+
+
 def format_message(sorted_members):
     blocks = {"blocks": [
-        {"type": "header", "text": {"type": "plain_text", "text": "Resultater for WoI i Stolpejakten :stolpejakten:"}}]}
+        {"type": "header", "text": {"type": "plain_text", "text": "Resultater for WoI Stolpejakten :stolpejakten:"}}]}
     has_user_not_found = False
+    local_rank = 1
     for sorted_member in sorted_members:
         rank = sorted_member.rank
+        local_rank_emoji = ''
         if rank == 'NOT FOUND':
             has_user_not_found = True
         else:
             rank = f'{int(sorted_member.rank):_}'.replace('_', ' ')
+            local_rank_emoji = get_placement_emoji(local_rank)
+            local_rank += 1
         if sorted_member.rank == 'NOT FOUND':
             has_user_not_found = True
         section = {
@@ -20,7 +40,7 @@ def format_message(sorted_members):
             "fields": [
                 {
                     "type": "mrkdwn",
-                    "text": f'*{rank}* | {sorted_member.user_name}'
+                    "text": f'{local_rank_emoji} [*{rank}*]\t{sorted_member.user_name}'
                 },
                 {
                     "type": "mrkdwn",
