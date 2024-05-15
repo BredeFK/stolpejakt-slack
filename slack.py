@@ -1,4 +1,5 @@
 import json
+from datetime import date
 
 import requests
 
@@ -20,8 +21,12 @@ def get_placement_emoji(rank):
 
 
 def format_message(sorted_members):
-    blocks = {"blocks": [
-        {"type": "header", "text": {"type": "plain_text", "text": "Resultater for WoI Stolpejakten :stolpejakten:"}}]}
+    norway_national_day = date(date.today().year, 5, 17)
+    title = "Resultater for WoI Stolpejakten :stolpejakten:"
+    if date.today() == norway_national_day:
+        title = ":flag-no: Resultater for WoI Stolpejakten :flag-no::party_blob:"
+
+    blocks = {"blocks": [{"type": "header", "text": {"type": "plain_text", "text": title}}]}
     has_user_not_found = False
     local_rank = 1
     for sorted_member in sorted_members:
