@@ -38,7 +38,7 @@ def get_group_id(token, group_code):
                 print(f'Group with code {group_code} found')
                 return group_id
         else:
-            print(f'Error: user has no groups')
+            print('Error: user has no groups')
     else:
         print(f'Error getting group ID: {req_me.status_code}: {req_me.text}')
         return None
@@ -90,7 +90,7 @@ def get_group_member_scoreboard(username, password, client_id, group_code):
                 members.append(member)
             else:
                 members.append(Member('NOT FOUND', name, -1))
-                print(f'Found more than one user with name {name}')
+                print(f'Could not find, or found more than one user with name {name}')
         else:
             print(f'Something went wrong: {req_user.status_code}: {req_user.text}')
             return None

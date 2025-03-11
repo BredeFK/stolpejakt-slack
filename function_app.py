@@ -31,3 +31,4 @@ def timer_trigger(myTimer: func.TimerRequest) -> None:
 
     # Post Slack message
     post_slack_message(WEBHOOK_URL, message)
+    logging.info(f'Message posted to Slack for {len(sorted_members)} members.')

@@ -63,8 +63,9 @@ def format_message(sorted_members):
             "type": "section",
             "text": {
                 "type": "plain_text",
-                "text": "Om det står NOT FOUND foran navnet ditt, betyr det at \ndet dukket opp mer enn én person da "
-                        "jeg søkte opp navnet ditt.\n Om du bytter til et mer unikt navn, så dukker du også opp :).",
+                "text": "Om det står NOT FOUND foran navnet ditt, betyr det enten:\n * Sesongen ikke har startet "
+                        "enda.\n * Det dukket opp mer enn én person da navnet ditt ble søkt opp.\n\n"
+                        "Bytt til et mer unikt navn om sesongen har startet, så dukker du også opp :).",
                 "emoji": True
             }
         }
