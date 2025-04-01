@@ -89,7 +89,7 @@ def get_group_member_scoreboard(username, password, client_id, group_code):
                 member = Member(user['rank'], user['user_name'], int(user['score']))
                 members.append(member)
             else:
-                members.append(Member('NOT FOUND', name, -1))
+                members.append(Member(-1, name, 0))
                 print(f'Could not find, or found more than one user with name {name}')
         else:
             print(f'Something went wrong: {req_user.status_code}: {req_user.text}')

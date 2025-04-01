@@ -21,31 +21,24 @@ def get_placement_emoji(rank):
 
 
 def format_message(sorted_members):
-    norway_national_day = date(date.today().year, 5, 17)
     title = "Resultater for WoI Stolpejakten :stolpejakten:"
-    if date.today() == norway_national_day:
-        title = ":flag-no: Resultater for WoI Stolpejakten :flag-no::party_blob:"
 
     blocks = {"blocks": [{"type": "header", "text": {"type": "plain_text", "text": title}}]}
-    has_user_not_found = False
     local_rank = 1
     for sorted_member in sorted_members:
-        rank = sorted_member.rank
+        rank = ':dotted_line_face:'
         local_rank_emoji = ''
-        if rank == 'NOT FOUND':
-            has_user_not_found = True
-        else:
+        if sorted_member.rank != -1:
             rank = f'{int(sorted_member.rank):_}'.replace('_', ' ')
+            rank = f'[*{rank}*]'
             local_rank_emoji = get_placement_emoji(local_rank)
             local_rank += 1
-        if sorted_member.rank == 'NOT FOUND':
-            has_user_not_found = True
         section = {
             "type": "section",
             "fields": [
                 {
                     "type": "mrkdwn",
-                    "text": f'{local_rank_emoji} [*{rank}*]\t{sorted_member.user_name}'
+                    "text": f'{local_rank_emoji} {rank}\t{sorted_member.user_name}'
                 },
                 {
                     "type": "mrkdwn",
@@ -55,22 +48,6 @@ def format_message(sorted_members):
         }
         blocks['blocks'].append(section)
 
-    if has_user_not_found:
-        divider = {
-            "type": "divider"
-        }
-        info = {
-            "type": "section",
-            "text": {
-                "type": "plain_text",
-                "text": "Om det står NOT FOUND foran navnet ditt, betyr det enten:\n * Sesongen ikke har startet "
-                        "enda.\n * Det dukket opp mer enn én person da navnet ditt ble søkt opp.\n\n"
-                        "Bytt til et mer unikt navn om sesongen har startet, så dukker du også opp :).",
-                "emoji": True
-            }
-        }
-        blocks['blocks'].append(divider)
-        blocks['blocks'].append(info)
     return blocks
 
 
