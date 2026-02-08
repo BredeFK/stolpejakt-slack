@@ -2,8 +2,8 @@
 # The Python Worker is managed by Azure Functions platform
 # Manually managing azure-functions-worker may cause unexpected issues
 
-azure-functions
-requests>=2.32.0
-pip>=23.3
-wheel~=0.41.2
-setuptools~=68.2.0
+azure-functions==1.24.0
+requests>=2.32.5
+pip>=26.0.1
+wheel~=0.46.3
+setuptools~=82.0.0
